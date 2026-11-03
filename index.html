@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Language Translation Tool | CodeAlpha AI Task 1</title>
+  <meta name="description" content="AI-Powered Language Translation Tool created for CodeAlpha Artificial Intelligence Internship Task 1. Supports 50+ languages, speech recognition, and text-to-speech.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Remixicon for modern crisp iconography -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="ri-translate-2"></i>
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">LinguaFlow</span>
+          <span class="badge">CodeAlpha AI Task 1</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button id="historyBtn" class="btn btn-icon" title="View Translation History" aria-label="Translation History">
+          <i class="ri-history-line"></i>
+          <span class="btn-label">History</span>
+          <span id="historyCountBadge" class="counter-badge" style="display: none;">0</span>
+        </button>
+
+        <button id="themeToggleBtn" class="btn btn-icon" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
+          <i class="ri-moon-line" id="themeIcon"></i>
+        </button>
+
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="btn btn-icon btn-github" title="View Source on GitHub">
+          <i class="ri-github-fill"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Application Container -->
+  <main class="main-content">
+    <div class="container">
+      
+      <!-- Hero Section -->
+      <section class="hero-section">
+        <h1 class="hero-title">Natural Language Translation Tool</h1>
+        <p class="hero-subtitle">
+          Translate text across 50+ languages seamlessly using intelligent translation APIs, speech synthesis, and voice recognition.
+        </p>
+      </section>
+
+      <!-- Translation Workspace Card -->
+      <section class="translator-card">
+        
+        <!-- Language Selector Bar -->
+        <div class="language-toolbar">
+          <div class="lang-select-group">
+            <label for="sourceLanguage" class="select-label">
+              <i class="ri-earth-line"></i> From
+            </label>
+            <div class="custom-select-wrapper">
+              <select id="sourceLanguage" class="lang-select" aria-label="Source Language">
+                <option value="auto">🌐 Auto Detect</option>
+                <!-- Dynamically populated from languages.js -->
+              </select>
+              <i class="ri-arrow-down-s-line select-arrow"></i>
+            </div>
+          </div>
+
+          <!-- Swap Languages Button -->
+          <button id="swapLanguagesBtn" class="btn-swap" title="Swap languages (Ctrl+S)" aria-label="Swap Languages">
+            <i class="ri-arrow-left-right-line"></i>
+          </button>
+
+          <div class="lang-select-group">
+            <label for="targetLanguage" class="select-label">
+              <i class="ri-global-line"></i> To
+            </label>
+            <div class="custom-select-wrapper">
+              <select id="targetLanguage" class="lang-select" aria-label="Target Language">
+                <!-- Dynamically populated from languages.js -->
+              </select>
+              <i class="ri-arrow-down-s-line select-arrow"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Translation Boxes Grid -->
+        <div class="translation-grid">
+          
+          <!-- Source Box -->
+          <div class="text-box source-box">
+            <div class="box-header">
+              <span class="box-tag">Input Text</span>
+              <button id="clearInputBtn" class="clear-btn" title="Clear input text">
+                <i class="ri-close-circle-line"></i> Clear
+              </button>
+            </div>
+
+            <textarea 
+              id="sourceText" 
+              placeholder="Enter or paste text to translate... (Press Ctrl + Enter to translate)"
+              maxlength="5000"
+              spellcheck="true"
+            ></textarea>
+
+            <div class="box-footer">
+              <div class="action-tools">
+                <!-- Voice Input (Speech to text) -->
+                <button id="micBtn" class="tool-btn" title="Speak to input text (Speech Recognition)">
+                  <i class="ri-mic-line"></i>
+                  <span class="tool-tooltip">Voice Input</span>
+                </button>
+
+                <!-- Text to Speech for Source -->
+                <button id="speakSourceBtn" class="tool-btn" title="Listen to source text">
+                  <i class="ri-volume-up-line"></i>
+                  <span class="tool-tooltip">Listen</span>
+                </button>
+
+                <!-- Copy Source -->
+                <button id="copySourceBtn" class="tool-btn" title="Copy source text">
+                  <i class="ri-file-copy-line"></i>
+                  <span class="tool-tooltip">Copy</span>
+                </button>
+              </div>
+
+              <!-- Character Counter -->
+              <div class="char-counter">
+                <span id="charCount">0</span> / 5000
+              </div>
+            </div>
+          </div>
+
+          <!-- Target Box -->
+          <div class="text-box target-box">
+            <div class="box-header">
+              <span class="box-tag">Translation</span>
+              <span id="statusBadge" class="status-badge ready">
+                <i class="ri-check-line"></i> Ready
+              </span>
+            </div>
+
+            <div class="output-container">
+              <textarea 
+                id="targetText" 
+                placeholder="Translation will appear here..." 
+                readonly
+              ></textarea>
+
+              <!-- Loading Indicator Overlay -->
+              <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+                <div class="spinner"></div>
+                <span>Translating your text...</span>
+              </div>
+            </div>
+
+            <div class="box-footer">
+              <div class="action-tools">
+                <!-- Text to Speech for Target -->
+                <button id="speakTargetBtn" class="tool-btn" title="Listen to translation">
+                  <i class="ri-volume-up-line"></i>
+                  <span class="tool-tooltip">Listen</span>
+                </button>
+
+                <!-- Copy Target -->
+                <button id="copyTargetBtn" class="tool-btn" title="Copy translated text">
+                  <i class="ri-file-copy-line"></i>
+                  <span class="tool-tooltip">Copy</span>
+                </button>
+
+                <!-- Save to History / Favorite -->
+                <button id="saveFavoriteBtn" class="tool-btn" title="Save this translation">
+                  <i class="ri-bookmark-line"></i>
+                  <span class="tool-tooltip">Save</span>
+                </button>
+              </div>
+
+              <div class="api-attribution">
+                <span id="apiIndicator">Powered by Translation API</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Action Controls Bar -->
+        <div class="translator-actions">
+          <button id="clearAllBtn" class="btn btn-secondary">
+            <i class="ri-delete-bin-line"></i> Clear All
+          </button>
+          
+          <button id="translateBtn" class="btn btn-primary">
+            <i class="ri-translate"></i>
+            <span class="btn-text">Translate Now</span>
+            <span class="btn-shortcut">Ctrl+↵</span>
+          </button>
+        </div>
+
+      </section>
+
+      <!-- Project Feature Highlights (for CodeAlpha presentation & documentation) -->
+      <section class="features-section">
+        <h2 class="features-heading">Task Highlights & Capabilities</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon"><i class="ri-global-line"></i></div>
+            <h3>50+ Languages</h3>
+            <p>Seamless translation across world languages with automatic language detection and real-time pair swap.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon"><i class="ri-mic-line"></i></div>
+            <h3>Speech Recognition</h3>
+            <p>Speak your sentences directly into the microphone for hands-free natural language translation.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon"><i class="ri-volume-up-line"></i></div>
+            <h3>Text-To-Speech (TTS)</h3>
+            <p>Listen to crystal-clear pronunciation of translated text in native accents powered by the Web Speech API.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon"><i class="ri-history-line"></i></div>
+            <h3>Translation History</h3>
+            <p>Automatically records your recent translation sessions locally with 1-click re-copying and export.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- History Drawer Modal -->
+  <div id="historyModal" class="modal-overlay" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="ri-history-line"></i>
+          <h3>Translation History</h3>
+        </div>
+        <button id="closeHistoryBtn" class="modal-close-btn" aria-label="Close history modal">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div id="historyList" class="history-list">
+          <!-- Populated dynamically via JS -->
+        </div>
+        <div id="emptyHistoryState" class="empty-state">
+          <i class="ri-file-list-line empty-icon"></i>
+          <p>No translation history yet.</p>
+          <span>Translate some text and it will appear here.</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="clearHistoryBtn" class="btn btn-secondary btn-sm">
+          <i class="ri-delete-bin-line"></i> Clear History
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="container footer-content">
+      <div class="footer-left">
+        <p><strong>CodeAlpha AI Internship</strong> &bull; Task 1: Language Translation Tool</p>
+        <span class="footer-subtext">Built with HTML5, CSS3, JavaScript & Translation APIs</span>
+      </div>
+      <div class="footer-right">
+        <span class="status-indicator">
+          <span class="status-dot"></span> System Online
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="languages.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
